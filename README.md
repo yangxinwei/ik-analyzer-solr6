@@ -1,0 +1,1 @@
+# ik-analyzer-solr6
