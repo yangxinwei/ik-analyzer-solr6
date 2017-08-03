@@ -3,13 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.wltea.ik-analyzer</groupId>
-  <artifactId>ik-analyzer-solr6</artifactId>
-  <version>6.x</version>
+  <artifactId>ik-analyzer-solr</artifactId>
+  <version>6.6.0</version>
   <packaging>jar</packaging>
 
   <name>ik-analyzer-solr6</name>
-  <!-- <url>http://code.google.com/p/ik-analyzer/</url> -->
-  <url>https://github.com/yangxinwei/ik-analyzer-solr6</url>
+  <url>http://code.google.com/p/ik-analyzer/</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

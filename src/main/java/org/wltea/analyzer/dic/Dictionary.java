@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.wltea.analyzer.cfg.Configuration;
+import org.wltea.analyzer.cfg.DefaultConfig;
 
 /**
  * 词典管理类,单子模式
@@ -101,7 +102,38 @@ public class Dictionary {
 		}
 		return singleton;
 	}
-	
+
+	/**
+	 * 重新更新词典
+	 * 由于停用词等不经常变也不建议常增加，故这里只修改动态扩展词库
+	 * @param inputStreamList
+	 * @return
+     */
+	public static Dictionary reloadDic(List<InputStream> inputStreamList) {
+		if (singleton == null) {
+			Configuration cfg = DefaultConfig.getInstance();
+			initial(cfg);
+		}
+		for (InputStream is : inputStreamList) {
+			try {
+				BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 512);
+				String theWord;
+				do {
+					theWord = br.readLine();
+					if (theWord != null && !"".equals(theWord.trim())) {
+						singleton._MainDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
+					}
+				} while (theWord != null);
+			} catch (IOException ioe) {
+				System.err.println("Other Dictionary loading exception.");
+				ioe.printStackTrace();
+			} finally {
+				streamClose(is);
+			}
+		}
+		return singleton;
+	}
+
 	/**
 	 * 批量加载新词条
 	 * @param words Collection<String>词条列表
@@ -215,14 +247,7 @@ public class Dictionary {
 			ioe.printStackTrace();
 			
 		}finally{
-			try {
-				if(is != null){
-                    is.close();
-                    is = null;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			streamClose(is);
 		}
 		//加载扩展词典
 		this.loadExtDict();
@@ -261,17 +286,14 @@ public class Dictionary {
 					ioe.printStackTrace();
 					
 				}finally{
-					try {
-						if(is != null){
-		                    is.close();
-		                    is = null;
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					streamClose(is);
 				}
 			}
 		}		
+	}
+
+	private void loadOtherStreamDicts() {
+
 	}
 	
 	/**
@@ -309,14 +331,7 @@ public class Dictionary {
 					ioe.printStackTrace();
 					
 				}finally{
-					try {
-						if(is != null){
-		                    is.close();
-		                    is = null;
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					streamClose(is);
 				}
 			}
 		}		
@@ -348,15 +363,34 @@ public class Dictionary {
 			ioe.printStackTrace();
 			
 		}finally{
-			try {
-				if(is != null){
-                    is.close();
-                    is = null;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			streamClose(is);
 		}
+	}
+
+	/**
+	 * 将公共关闭封装,减少重复代码
+	 * add
+	 * @param is
+	 * @throws IOException
+     */
+	private static void streamClose(InputStream is) {
+		try {
+			if(is != null){
+				is.close();
+				is = null;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @Description 清空字典缓存，用于动态更新字典表
+	 * @author liangyongxing
+	 * @createTime 2017/02/07
+	 */
+	public static void clear(){
+		singleton = null;
 	}
 	
 }

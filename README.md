@@ -15,20 +15,23 @@ The original creator of IKAnalyzer is [Xinwei Yang ](youngxw@gmail.com) . The pr
 
 > mvn clean -Djavac.src.version=1.7 -Djavac.target.version=1.7 install
 
-copy ik-analyzer-solr6-x.x.jar to server/solr-webapp/webapp/WEB-INF/lib
+copy ik-analyzer-solr-6.x.x.jar to server/solr-webapp/webapp/WEB-INF/lib
 
 # Configuration #
     <fieldType name="text_ik" class="solr.TextField">   
       <analyzer type="index">
-        <tokenizer class="org.wltea.analyzer.lucene.IKTokenizerFactory" useSmart="false" />
+        <tokenizer class="org.wltea.analyzer.lucene.IKTokenizerFactory" useSmart="false" conf="ik.conf" />
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
       </analyzer>
       <analyzer type="query">
-        <tokenizer class="org.wltea.analyzer.lucene.IKTokenizerFactory" useSmart="true" />
+        <tokenizer class="org.wltea.analyzer.lucene.IKTokenizerFactory" useSmart="true" conf="ik.conf" />
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" />
       </analyzer>
     </fieldType>
 
 or
-    
+
+    The default load IK thesaurus
     <fieldType name="text_ik" class="solr.TextField">   
       <analyzer type="index" useSmart="false" class="org.wltea.analyzer.lucene.IKAnalyzer"/>   
       <analyzer type="query" useSmart="true" class="org.wltea.analyzer.lucene.IKAnalyzer"/>   
